@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="chency-logo" width="82" height="82" viewBox="0 0 82 82" fill="none">
+  <title>chency — CY signature mark</title>
+  <style>
+    .chency-logo{--logo-ink:#251d16;--logo-red:#a92e1e;--logo-paper:#fbe7c0;overflow:visible}
+    .chency-logo .brand-emblem,.chency-logo .brand-spark{transform-box:fill-box;transform-origin:center}
+    .chency-logo .brand-emblem{animation:chency-mark-sway 6s ease-in-out infinite}
+    .chency-logo .brand-spark{animation:chency-spark-turn 6s ease-in-out infinite}
+    .chency-logo:hover .brand-emblem{animation-duration:1.6s}
+    .motion-paused .chency-logo *{animation-play-state:paused!important}
+    @keyframes chency-mark-sway{0%,65%,100%{transform:rotate(0)}73%{transform:rotate(-9deg)}82%{transform:rotate(6deg)}91%{transform:rotate(-3deg)}}
+    @keyframes chency-spark-turn{0%,65%,100%{transform:rotate(0) scale(1)}76%{transform:rotate(75deg) scale(1.14)}88%{transform:rotate(90deg) scale(.94)}}
+    @media(prefers-reduced-motion:reduce){.chency-logo *{animation:none!important}}
+  </style>
+  <g class="brand-emblem">
+    <path d="M12 29C17 10 48 7 61 24C77 45 62 69 40 72C17 75 3 51 12 29Z" fill="var(--logo-ink)"/>
+    <path d="M9 25C14 6 45 3 58 20C74 41 59 65 37 68C14 71 0 47 9 25Z" fill="var(--logo-paper)" stroke="var(--logo-ink)" stroke-width="2.5"/>
+    <path d="M39 23C29 14 15 24 17 37C19 49 32 50 40 39" stroke="var(--logo-red)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M38 27C33 39 35 45 40 40L49 24C46 40 39 59 27 59C18 59 18 52 26 50" stroke="var(--logo-ink)" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="m11 15-5-4m3 14-6-1" stroke="var(--logo-ink)" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <path class="brand-spark" d="m67 13 2.1 6.5 6.8-1.1-4.2 5.4 4.3 5.3-6.8-1-2.2 6.5-2.2-6.5-6.8 1 4.3-5.3-4.2-5.4 6.8 1.1Z" fill="var(--logo-red)" stroke="var(--logo-ink)" stroke-width=".7"/>
+</svg>

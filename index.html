@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <script id="file-entry">
+      if (location.protocol === 'file:') {
+        const offline = new URL('./offline.html', location.href);
+        offline.search = location.search;
+        offline.hash = location.hash;
+        location.replace(offline.href);
+      }
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ecd7ac" />
+    <meta name="description" content="你好，我是 chency。一名全栈工程师，从前端界面到 Go、Java 服务端，把想法做成能运行的产品，也用 Three.js 和 Godot 创造好玩的世界。" />
+    <title>chency — 写代码，造世界。</title>
+    <link rel="stylesheet" href="/fonts/wenkai/wenkai.css" />
+    <link rel="preload" href="/fonts/chency-script/chency-script.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="/vendor/rubber-hose/button.js" defer></script>
+    <script src="/vendor/rubber-hose/tabs.js" defer></script>
+    <script src="/vendor/rubber-hose/toggle.js" defer></script>
+    <script src="/vendor/rubber-hose/progress.js" defer></script>
+    <script src="/vendor/rubber-hose/toast.js" defer></script>
+    <script src="/vendor/rubber-hose/input.js" defer></script>
+    <script src="/vendor/rubber-hose/radio.js" defer></script>
+    <script src="/vendor/rubber-hose/slider.js" defer></script>
+    <script src="/vendor/rubber-hose/checkbox.js" defer></script>
+    <script src="/vendor/rubber-hose/rating.js" defer></script>
+    <script src="/vendor/hose-page/hose-page.js" defer></script>
+  </head>
+  <body class="hose-page">
+    <a href="#hello" class="skip-link">跳到主要内容</a>
+    <div id="app" class="hose-reel"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
