@@ -10,6 +10,10 @@ import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import { defaults as defaultControls } from 'ol/control';
 import 'ol/ol.css';
+import './hose-lab-controls.css';
+import { settleHoseControls } from '../motion-controls';
+
+type HoseInput = HTMLElement & { value: string };
 
 const places = [
   { name: '断桥', type: 'scenery', coord: [120.1487, 30.2595], note: '在白堤的起点，看城市与湖水相遇。' },
@@ -21,7 +25,7 @@ const places = [
 ];
 
 export function mount(root: HTMLElement): () => void {
-  root.innerHTML = `<div class="lab-controls" role="group" aria-label="地图图层筛选"><button data-category="all" aria-pressed="true">全部地点</button><button data-category="scenery" aria-pressed="false">湖畔风景</button><button data-category="culture" aria-pressed="false">人文地标</button><button id="map-reset" class="control-spacer">回到西湖 ↺</button></div><div id="map-stage" class="lab-stage map-stage" tabindex="0" role="region" aria-label="西湖示意地图，使用方向键平移，加减键缩放"></div><div class="lab-description map-footer"><p id="map-detail" class="map-detail" role="status">选一个地点，开始今天的城市漫游。</p><span id="map-coordinates" class="map-coordinates">120.1450° E / 30.2460° N</span></div><div class="map-keyboard-list" aria-label="地图上的地点"></div><p class="lab-description">拖动 / 双指缩放地图，点击空白处拾取坐标。也可以用地点按钮探索。<br><strong>本地矢量示意数据 · 边界与坐标经简化，仅用于交互演示，不用于导航。</strong></p>`;
+  root.innerHTML = `<div class="map-search-tools"><div class="map-search-copy"><strong>在西湖，找一个想去的地方</strong><p>搜索地点名或故事关键词，地图标记和下方地点会一起筛选。</p><div><span id="map-search-count" role="status" aria-live="polite">找到 ${places.length} 个地点</span><button id="map-search-clear" type="button" hidden>清空搜索 ×</button></div></div><hose-input id="map-search" type="search" name="place" label="搜索西湖地点" placeholder="试试：断桥" maxlength="50"></hose-input></div><div class="lab-controls" role="group" aria-label="地图图层筛选"><button data-category="all" aria-pressed="true">全部地点</button><button data-category="scenery" aria-pressed="false">湖畔风景</button><button data-category="culture" aria-pressed="false">人文地标</button><button id="map-reset" class="control-spacer">回到西湖 ↺</button></div><div id="map-stage" class="lab-stage map-stage" tabindex="0" role="region" aria-label="西湖示意地图，使用方向键平移，加减键缩放"></div><div class="lab-description map-footer"><p id="map-detail" class="map-detail" role="status">选一个地点，开始今天的城市漫游。</p><span id="map-coordinates" class="map-coordinates">120.1450° E / 30.2460° N</span></div><div class="map-keyboard-list" aria-label="地图上的地点"></div><p class="map-search-empty" hidden>没有匹配的地点。换个关键词，或切回「全部地点」试试。</p><p class="lab-description">拖动 / 双指缩放地图，点击空白处拾取坐标。也可以用地点按钮探索。<br><strong>本地矢量示意数据 · 边界与坐标经简化，仅用于交互演示，不用于导航。</strong></p>`;
   const stage = root.querySelector<HTMLDivElement>('#map-stage')!;
   const baseFeatures: Feature[] = [];
   function polygon(points: number[][], fill: string, stroke = '#abb6a0') {
@@ -59,10 +63,14 @@ export function mount(root: HTMLElement): () => void {
   baseFeatures.push(lakeLabel);
   const pointFeatures = places.map((place,index)=>new Feature({geometry:new Point(fromLonLat(place.coord)),place,index}));
   let category='all';
+  let query='';
   let selected=-1;
+  let disposed=false;
+  const normalize=(value:string)=>value.normalize('NFKC').trim().toLocaleLowerCase('zh-CN');
+  const matchesPlace=(place:typeof places[number])=>(category==='all'||place.type===category)&&(!query||normalize(`${place.name} ${place.note} ${place.type==='culture'?'人文地标':'湖畔风景'}`).includes(query));
   const pointsLayer = new VectorLayer({source:new VectorSource({features:pointFeatures}),style:feature=>{
     const place=feature.get('place') as typeof places[number];
-    if(category!=='all'&&place.type!==category) return undefined;
+    if(!matchesPlace(place)) return undefined;
     const active=selected===feature.get('index');
     return new Style({image:new Circle({radius:active?15:12,fill:new Fill({color:place.type==='culture'?'#536e64':'#d9432f'}),stroke:new Stroke({color:'#fff8e7',width:active?4:3})}),text:new Text({text:String(Number(feature.get('index'))+1),font:'bold 11px sans-serif',fill:new Fill({color:'#fff8e7'})}),zIndex:active?10:1});
   }});
@@ -74,11 +82,16 @@ export function mount(root: HTMLElement): () => void {
   const coords=root.querySelector('#map-coordinates')!;
   const detail=root.querySelector('#map-detail')!;
   const list=root.querySelector('.map-keyboard-list')!;
+  const search=root.querySelector<HoseInput>('#map-search')!;
+  const searchCount=root.querySelector('#map-search-count')!;
+  const clearSearch=root.querySelector<HTMLButtonElement>('#map-search-clear')!;
+  const empty=root.querySelector<HTMLElement>('.map-search-empty')!;
   const animateTo=(center:number[],zoom?:number)=>{
     if(matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.classList.contains('motion-paused')) {map.getView().setCenter(center);if(zoom)map.getView().setZoom(zoom);}
     else map.getView().animate({center,zoom:zoom??map.getView().getZoom(),duration:400});
   };
   function selectPlace(index:number) {
+    if(!matchesPlace(places[index]))return;
     selected=index;pointsLayer.changed();
     const place=places[index];
     detail.textContent=`${place.name} · ${place.note}`;
@@ -89,6 +102,27 @@ export function mount(root: HTMLElement): () => void {
   places.forEach((place,index)=>{
     const button=document.createElement('button');button.type='button';button.textContent=`${index+1} ${place.name}`;button.dataset.index=String(index);button.setAttribute('aria-pressed','false');button.addEventListener('click',()=>selectPlace(index));list.append(button);
   });
+  function updateFilter() {
+    selected=-1;
+    let count=0;
+    list.querySelectorAll<HTMLButtonElement>('button').forEach(item=>{
+      const visible=matchesPlace(places[Number(item.dataset.index)]);
+      item.hidden=!visible;
+      item.setAttribute('aria-pressed','false');
+      if(visible)count++;
+    });
+    pointsLayer.changed();
+    searchCount.textContent=`找到 ${count} 个地点`;
+    clearSearch.hidden=!search.value;
+    empty.hidden=count>0;
+    detail.textContent=count?'点击地图标记或下方地点，看看这里的故事。':'暂时没有匹配的地点，试试其他关键词或分类。';
+    settleHoseControls();
+  }
+  const onSearch=()=>{query=normalize(search.value);updateFilter();};
+  search.addEventListener('input',onSearch);
+  clearSearch.addEventListener('click',()=>{
+    search.value='';query='';updateFilter();search.focus();
+  });
   map.on('singleclick',event=>{
     const hit=map.forEachFeatureAtPixel(event.pixel,feature=>feature.get('place')?feature:undefined,{layerFilter:layer=>layer===pointsLayer,hitTolerance:7});
     if(hit)selectPlace(Number(hit.get('index')));
@@ -96,14 +130,20 @@ export function mount(root: HTMLElement): () => void {
   });
   map.on('pointermove',event=>{if(!event.dragging)stage.style.cursor=map.hasFeatureAtPixel(event.pixel,{layerFilter:layer=>layer===pointsLayer})?'pointer':'grab';});
   root.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(button=>button.addEventListener('click',()=>{
-    category=button.dataset.category!;selected=-1;pointsLayer.changed();
+    category=button.dataset.category!;
     root.querySelectorAll('[data-category]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
-    list.querySelectorAll<HTMLButtonElement>('button').forEach(item=>{item.hidden=category!=='all'&&places[Number(item.dataset.index)].type!==category;item.setAttribute('aria-pressed','false');});
-    detail.textContent=`正在显示${button.textContent}，点击地图标记或下方地点探索。`;
+    updateFilter();
   }));
   root.querySelector('#map-reset')!.addEventListener('click',fitLake);
   const observer=new ResizeObserver(()=>map.updateSize());observer.observe(stage);
   map.updateSize();
   fitLake();
-  return()=>{observer.disconnect();map.setTarget(undefined);map.dispose();};
+  const onMotionChange=()=>settleHoseControls();
+  window.addEventListener('motionchange',onMotionChange);
+  const documentReady=document.readyState==='loading'?new Promise<void>(resolve=>document.addEventListener('DOMContentLoaded',()=>resolve(),{once:true})):Promise.resolve();
+  void Promise.all([documentReady,customElements.whenDefined('hose-input')]).then(()=>{
+    if(disposed)return;
+    requestAnimationFrame(()=>{if(!disposed){map.updateSize();settleHoseControls();}});
+  });
+  return()=>{disposed=true;observer.disconnect();window.removeEventListener('motionchange',onMotionChange);map.setTarget(undefined);map.dispose();};
 }

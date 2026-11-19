@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build && node scripts/build-offline.mjs",
+    "build": "node scripts/build-back-top.mjs && tsc --noEmit && vite build && node scripts/build-offline.mjs",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {

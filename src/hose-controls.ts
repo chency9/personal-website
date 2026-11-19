@@ -1,16 +1,12 @@
-import { initPlayground } from './playground';
 import { initPortfolio } from './portfolio';
+import { initMotionControls, settleHoseControls } from './motion-controls';
 
 type LabId = 'map' | 'planet' | 'game';
-type HoseToggle = HTMLElement & { checked: boolean; disabled: boolean };
 type HoseTabs = HTMLElement & { selected: number };
 type HoseToast = HTMLElement & { show: (message: string, brief?: string) => void; hide: () => void };
-type HoseWindow = Window & { RubberHose?: { paused: boolean; advance: (dt: number) => void } };
 
 export function initHoseControls() {
-  const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
-  let motionPaused = motionQuery.matches;
-  const toggle = document.querySelector<HoseToggle>('#motion-switch')!;
+  initMotionControls();
   const tabs = document.querySelector<HoseTabs>('#lab-tabs')!;
   const toast = document.querySelector<HoseToast>('#hello-toast')!;
   const dismiss = document.querySelector<HTMLButtonElement>('.toast-dismiss')!;
@@ -22,42 +18,10 @@ export function initHoseControls() {
     : Promise.resolve();
   const ready = Promise.all([documentReady, ...['toggle', 'tabs', 'progress', 'toast', 'button', 'input', 'radio', 'slider', 'checkbox', 'rating'].map(name => customElements.whenDefined(`hose-${name}`))]);
 
-  // A paused clock still needs one settled drawing after an explicit interaction.
-  function settlePausedControls() {
-    const fx = (window as HoseWindow).RubberHose;
-    if (motionPaused && fx?.paused) { fx.advance(2); fx.advance(2); }
-  }
+  const settlePausedControls = settleHoseControls;
   initPortfolio(settlePausedControls);
-  function updateMotion() {
-    document.documentElement.classList.toggle('motion-paused', motionPaused);
-    toggle.checked = !motionPaused;
-    toggle.disabled = motionQuery.matches;
-    document.querySelector('#motion-state')!.textContent = motionQuery.matches ? '跟随系统：减少动态' : motionPaused ? '已静止，灵感继续' : '动画已开启';
-    const fx = (window as HoseWindow).RubberHose;
-    if (fx) fx.paused = motionPaused && !motionQuery.matches;
-    settlePausedControls();
-  }
-  toggle.addEventListener('change', () => { motionPaused = !toggle.checked; updateMotion(); });
-  motionQuery.addEventListener('change', () => { motionPaused = motionQuery.matches; updateMotion(); });
-  // Apply CSS immediately; defer property assignments until the hosts are upgraded.
-  document.documentElement.classList.toggle('motion-paused', motionPaused);
-  void ready.then(() => {
-    updateMotion();
-    // The core stops rendering offscreen characters. Redraw newly visible ones when paused.
-    const observer = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) requestAnimationFrame(settlePausedControls);
-    });
-    document.querySelectorAll('hose-toggle,hose-tabs,hose-progress,hose-toast,hose-button,hose-input,hose-radio,hose-slider,hose-checkbox,hose-rating').forEach(el => observer.observe(el));
-    initPlayground(settlePausedControls, selectLab);
-  });
-  window.addEventListener('load', settlePausedControls, { once: true });
 
   const labIds: LabId[] = ['map', 'planet', 'game'];
-  function selectLab(value: LabId) {
-    if (!labIds.includes(value)) return;
-    tabs.selected = labIds.indexOf(value);
-    updatePanel(value);
-  }
   function updatePanel(value: LabId) {
     document.querySelectorAll<HTMLElement>('[data-project]').forEach(card => {
       card.hidden = card.dataset.project !== value;

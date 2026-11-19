@@ -1,0 +1,59 @@
+.portrait-stage{position:relative}
+.cat-scene{position:absolute;inset:0;z-index:3;pointer-events:none}
+.cat-props{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cat-actor{position:absolute;left:0;bottom:7.6271%;width:26.3158%;padding:0;background:none;aspect-ratio:180/170;border-radius:45%;pointer-events:auto;cursor:pointer;transform-origin:50% 100%;touch-action:manipulation}
+.cat-actor>svg{width:100%;height:auto;overflow:visible}
+.cat-actor:focus-visible{outline:2px dashed var(--red);outline-offset:3px;background:#fbe7c035}
+.cat-whisper{position:absolute;left:2%;bottom:32%;padding:5px 10px;border:1.5px solid var(--ink);border-radius:55% 48% 51% 30%;background:var(--cream);font-size:12px;font-weight:600;white-space:nowrap;transform:rotate(-8deg);opacity:0}
+.cat-scene[data-state=pet] .cat-whisper,.cat-scene[data-state=sleep] .cat-whisper,.cat-scene[data-phase=lick] .cat-whisper,.cat-actor:hover~.cat-whisper,.cat-actor:focus-visible~.cat-whisper{opacity:1}
+.cat-scene.cat-bubble-open .cat-whisper{opacity:0}
+/* Fixed coordinates are measured from the cat, clamped to the viewport, and updated
+   on scroll/resize. This also works without CSS Anchor Positioning over file://. */
+/* Only the decorative paper is masked; controls and focus rings stay unclipped. */
+.cat-panel{display:none;position:fixed;inset:auto;margin:0;width:354px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:38px 43px 37px;border:0;background:transparent;color:var(--ink);overflow:visible;opacity:0;z-index:50;transform-origin:var(--cat-bubble-tip,50px) bottom}
+.cat-panel[data-open=true]{display:block;opacity:1}
+.cat-panel::before{content:'';position:absolute;inset:0;background:var(--cream) url('/textures/aged-paper.jpg') center/600px;-webkit-mask-image:url(#cat-bubble-paper-mask);mask-image:url(#cat-bubble-paper-mask);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;pointer-events:none}
+.cat-bubble-outline{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;fill:none;stroke:var(--ink);stroke-linecap:round;stroke-linejoin:round}
+.cat-bubble-shadow{stroke-width:2.8}
+.cat-bubble-line{stroke-width:1.7}
+.cat-thought-dots{position:absolute;left:var(--cat-bubble-tip,50px);bottom:0;pointer-events:none}
+.cat-thought-dots::before,.cat-thought-dots::after{content:'';position:absolute;background:var(--cream);border:1.7px solid var(--ink);border-radius:50%}
+.cat-thought-dots::before{width:13px;height:10px;left:-3px;top:1px;transform:rotate(-20deg);box-shadow:1px 1px 0 var(--ink)}
+.cat-thought-dots::after{width:6px;height:5px;left:4px;top:20px;transform:rotate(15deg)}
+.cat-panel[data-side=below]{transform-origin:var(--cat-bubble-tip,50px) top}
+.cat-panel[data-side=below] .cat-thought-dots{top:0;bottom:auto;transform:scaleY(-1)}
+.cat-panel::backdrop{background:transparent}
+.cat-care{position:relative}
+.cat-bubble-spark{position:absolute;left:-19px;top:16px;font-size:24px;color:var(--red);transform:rotate(-12deg);pointer-events:none}
+.cat-intro{display:flex;align-items:center;justify-content:center;font-size:11px;margin-bottom:15px}
+.cat-intro strong{display:flex;align-items:center;justify-content:center;gap:5px;font-size:17px;font-weight:600;letter-spacing:.6px;transform:rotate(-4deg)}
+.cat-intro strong svg{width:21px;height:21px;color:var(--red)}
+.cat-bubble-close{position:absolute;right:1px;top:0;display:grid;place-items:center;background:var(--cream);border:1.3px solid var(--ink);border-radius:48% 52% 46% 54%;width:28px;min-height:28px;padding:0;font:19px/1 sans-serif;transform:rotate(5deg)}
+.cat-bubble-close:hover{background:var(--yellow)}
+.cat-meals{font-size:10px;white-space:nowrap;color:var(--muted)}
+.cat-meals b{color:var(--red);font-variant-numeric:tabular-nums}
+.cat-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;max-width:224px;margin-inline:auto;gap:9px 10px}
+.cat-actions button{min-height:36px;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 7px;border:1.5px solid var(--ink);border-radius:17px 18px 16px 18px / 18px 16px 18px 17px;background:var(--cream);box-shadow:1px 2px 0 #251d1680;font-size:11px;white-space:nowrap;transform:rotate(-2deg)}
+.cat-actions button:nth-child(2){border-radius:18px 16px 18px 17px / 16px 18px 17px 18px;transform:rotate(2deg)}
+.cat-actions button:nth-child(3){border-radius:16px 18px 17px 19px / 18px 17px 18px 16px;transform:rotate(1deg)}
+.cat-actions button:nth-child(4){border-radius:18px 17px 19px 16px / 17px 18px 16px 18px;transform:rotate(-1deg)}
+.cat-actions svg{width:16px;height:16px;flex-shrink:0}
+.cat-actions button:first-child{background:var(--red);color:var(--cream)}
+.cat-actions button:hover{background:var(--yellow);color:var(--ink)}
+.cat-actions button:active{translate:0 1px;box-shadow:0 1px 0 #251d1680}
+.cat-actions button[data-active]{background:var(--yellow);color:var(--ink);box-shadow:inset 1px 1px 0 #251d1626;outline:1px dashed var(--ink);outline-offset:3px}
+.cat-actions button:focus-visible,.cat-bubble-close:focus-visible{outline:3px solid var(--red);outline-offset:4px}
+.cat-bubble-footer{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:14px;font-size:11px;color:var(--muted);transform:rotate(-2deg)}
+#cat-status{max-width:215px;min-height:32px;margin:8px auto 0;font-size:10px;line-height:1.6;color:var(--muted);text-align:center;text-wrap:pretty}
+.cat-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+@media(prefers-reduced-motion:no-preference){
+  html:not(.motion-paused) .cat-panel{transform:translateY(7px) scale(.9);transition:opacity .2s ease,transform .3s cubic-bezier(.2,1.35,.4,1),display .3s,overlay .3s;transition-behavior:allow-discrete}
+  html:not(.motion-paused) .cat-panel[data-open=true]{transform:translateY(0) scale(1)}
+  @starting-style{html:not(.motion-paused) .cat-panel[data-open=true]{opacity:0;transform:translateY(7px) scale(.9)}}
+}
+@media(hover:none){.cat-actor[aria-expanded=false]~.cat-whisper{opacity:1}.cat-bubble-close{width:30px;min-height:30px}}
+@media(pointer:coarse){.cat-actions button{min-height:44px}}
+@media(max-width:560px){.cat-whisper{font-size:11px}.cat-panel{padding:38px 35px 35px}}
+@media(max-height:360px){.cat-panel{overflow:auto}.cat-thought-dots{display:none}}
+@supports (not (mask-image:url(#cat-bubble-paper-mask))) and (not (-webkit-mask-image:url(#cat-bubble-paper-mask))){.cat-panel::before{clip-path:inset(4% 3% round 30px)}}
+@media(forced-colors:active){.cat-panel::before{background:Canvas}.cat-bubble-outline{stroke:CanvasText}.cat-thought-dots::before,.cat-thought-dots::after{background:Canvas;border-color:CanvasText}.cat-actions button[data-active]{outline:3px double Highlight}.cat-actions button{border-color:ButtonText}.cat-actor:focus-visible{outline-color:Highlight}}

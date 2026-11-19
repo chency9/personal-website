@@ -1,0 +1,43 @@
+/* Scroll state queries do not introduce a second scrolling surface. */
+html{container-type:scroll-state}
+.scroll-top-sentinel{position:absolute;left:0;top:0;width:1px;height:1px;pointer-events:none}
+body{padding-bottom:130px}
+.scroll-top-dock{position:fixed;right:max(22px,env(safe-area-inset-right));bottom:max(17px,env(safe-area-inset-bottom));z-index:44;display:none;width:108px;text-align:center;color:var(--ink);transform-origin:50% 90%;--hose-focus:var(--red)}
+/* Keep scroll growth separate from the dock's arrival/exit transform. */
+.scroll-top-figure{transform:scale(var(--scroll-top-scale,1));transform-origin:bottom right}
+.scroll-top-figure>hose-back-top{display:block;width:100%;max-width:none}
+@supports(animation-timeline:scroll()){
+  @keyframes scroll-top-grow{from{transform:scale(.6)}to{transform:scale(1)}}
+  .scroll-top-dock[data-page=home][data-scroll-sizing=native] .scroll-top-figure{animation:scroll-top-grow auto linear both;animation-timeline:scroll(root block)}
+}
+.scroll-top-caption{display:block;width:fit-content;margin:-2px auto 0;padding:0 3px 3px;font:11px/1.6 var(--font-kai);letter-spacing:1px;border-bottom:1px solid #251d1655}
+.scroll-top-caption>span{display:inline-block;color:var(--red);font-weight:700;margin-left:2px}
+.scroll-top-dock:has(:focus-visible) .scroll-top-caption{color:var(--red)}
+.scroll-top-dock[data-ready=true][data-scrolled=true]{display:block}
+@supports(container-type:scroll-state){
+  @container scroll-state(scrollable:top){.scroll-top-dock[data-ready=true]{display:block}}
+}
+body:has(dialog[open]) .scroll-top-dock{display:none}
+/* The character pops in and shrinks away; it never fades into a ghost. */
+@media(prefers-reduced-motion:no-preference){
+  .scroll-top-dock{transition:transform .28s cubic-bezier(.22,1,.36,1),display .28s;transition-behavior:allow-discrete;transform:translateY(18px) scale(.55)}
+  .scroll-top-dock[data-scrolled=true]{transform:none}
+  @supports(container-type:scroll-state){
+    @container scroll-state(scrollable:top){.scroll-top-dock{transform:none}}
+  }
+  @starting-style{
+    .scroll-top-dock[data-ready=true]{transform:translateY(18px) scale(.55)}
+  }
+}
+.motion-paused .scroll-top-dock{transition:none;transform:none}
+@media(max-width:580px){
+  body{padding-bottom:112px}
+  .scroll-top-dock{width:84px;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom))}
+  .scroll-top-caption{font-size:10px;letter-spacing:.4px}
+}
+@media(forced-colors:active){
+  .scroll-top-dock{background:Canvas;border:1px solid ButtonText;border-radius:12px}
+  .scroll-top-caption{color:ButtonText;border-color:ButtonText}
+  .scroll-top-caption>span{color:ButtonText}
+}
+@media print{body{padding-bottom:0}.scroll-top-dock,.scroll-top-sentinel{display:none!important}}

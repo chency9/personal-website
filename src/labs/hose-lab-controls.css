@@ -1,0 +1,34 @@
+.map-search-tools{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:8px 24px 3px;border-bottom:1px solid var(--line)}
+.map-search-copy{max-width:380px;min-width:0}
+.map-search-copy strong{font-size:17px;font-weight:600}
+.map-search-copy p{margin:8px 0;font-size:12px;line-height:1.8;color:var(--muted)}
+.map-search-copy>div{display:flex;align-items:center;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--red)}
+.map-search-copy button{background:none;border-bottom:1px solid var(--ink);padding:7px 0;min-height:32px;font-size:11px}
+.map-search-tools hose-input{display:block;flex:0 0 270px;width:270px;max-width:100%}
+.map-search-empty{padding:2px 24px 16px;font-size:12px;line-height:1.8;color:var(--red)}
+.planet-settings{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,1fr);align-items:center;gap:12px 28px;padding:16px 24px 7px;border-bottom:1px solid var(--line)}
+.planet-settings fieldset{min-width:0;margin:0;padding:0;border:0}
+.planet-settings legend,.planet-wire-label{font-size:13px;font-weight:600;letter-spacing:.4px}
+.planet-settings hose-radio{display:block;width:210px;max-width:100%;margin:0 auto}
+.planet-wire-control{display:flex;align-items:center;gap:10px}
+.planet-settings hose-checkbox{display:block;width:145px;max-width:58%;flex-shrink:0}
+.planet-wire-state{font-size:11px;line-height:1.8;color:var(--muted)}
+.planet-wire-state strong{display:block;font-size:13px;color:var(--ink)}
+.planet-material-state{font-size:11px;line-height:1.8;color:var(--muted);margin-top:8px}
+.map-search-tools hose-input::part(input):focus-visible,.planet-settings hose-checkbox::part(input):focus-visible{outline:3px solid var(--red);outline-offset:3px}
+.planet-settings hose-radio::part(group):focus-within{outline:2px dashed var(--red);outline-offset:-3px;border-radius:12px}
+@media(max-width:560px){
+  .map-search-tools{padding:16px 16px 0;display:block}
+  .map-search-copy strong{font-size:15px}
+  .map-search-tools hose-input{width:260px;max-width:100%;margin:-7px auto -7px}
+  .map-search-copy p{font-size:11px}
+  .planet-settings{padding:14px 14px 9px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px}
+  .planet-settings hose-radio{width:180px}
+  .planet-wire-control{display:block}
+  .planet-settings hose-checkbox{width:130px;max-width:100%;margin:-3px auto 0}
+  .planet-wire-state{text-align:center;font-size:10px}
+  .planet-wire-state strong{font-size:12px}
+  .planet-material-state{font-size:10px;margin-top:4px}
+}
+@media(forced-colors:active){.map-search-tools hose-input::part(input):focus-visible,.planet-settings hose-checkbox::part(input):focus-visible{outline-color:Highlight}.planet-settings hose-radio::part(group):focus-within{outline-color:Highlight}}
+@media(max-width:360px){.planet-settings{grid-template-columns:minmax(0,1fr)}.planet-settings hose-radio{width:210px;margin-left:0}.planet-wire-control{display:flex}.planet-settings hose-checkbox{width:130px;max-width:55%;margin:0}.planet-wire-state{text-align:left}}
